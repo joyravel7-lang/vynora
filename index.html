@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vynora | Connect. Grow. Create. Earn.</title>
+  <style>
+    :root {
+      --purple: #6638d3;
+      --dark: #241b3b;
+      --light: #f6f3fc;
+      --white: #ffffff;
+      --muted: #716b80;
+      --border: #e8e2f2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--dark);
+      background: var(--light);
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--white);
+      padding: 16px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo { font-size: 26px; font-weight: 800; color: var(--purple); }
+    nav { display: flex; gap: 18px; flex-wrap: wrap; }
+    nav a { color: var(--dark); text-decoration: none; font-weight: 600; }
+
+    .hero {
+      padding: 55px 6%;
+      color: white;
+      background: linear-gradient(120deg, #4520a8, #8759ec);
+    }
+
+    .hero h1 { font-size: clamp(32px, 5vw, 48px); margin: 0 0 12px; }
+    .hero p { max-width: 600px; font-size: 17px; }
+    .container { max-width: 1100px; margin: auto; padding: 28px 18px; }
+    .section { margin-bottom: 36px; scroll-margin-top: 20px; }
+    .section h2 { margin-bottom: 5px; }
+    .subheading { color: var(--muted); margin-top: 0; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      overflow-wrap: anywhere;
+    }
+
+    .card h3 { margin-top: 0; margin-bottom: 8px; }
+    .tag {
+      display: inline-block;
+      background: #eee7ff;
+      color: #4d29a0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    label { display: block; font-weight: 600; margin: 12px 0 5px; }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #d9d0e9;
+      border-radius: 9px;
+      font: inherit;
+      background: white;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    button, .button {
+      display: inline-block;
+      background: var(--purple);
+      color: white;
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 16px;
+      margin-top: 12px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    button:hover, .button:hover { background: #4d25ad; }
+    .secondary { background: #eee7ff; color: #4d29a0; }
+    .secondary:hover { background: #ded1ff; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions button { margin-top: 10px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .empty { padding: 20px; border: 1px dashed #cfc3e3; border-radius: 12px; color: var(--muted); }
+    footer { padding: 28px 18px; text-align: center; color: var(--muted); }
+
+    @media (max-width: 700px) {
+      .layout { grid-template-columns: 1fr; }
+      header { align-items: flex-start; }
+      nav { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Vynora</div>
+    <nav>
+      <a href="#feed">Community</a>
+      <a href="#businesses">Businesses</a>
+      <a href="#opportunities">Opportunities</a>
+      <a href="#skills">Skills</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Connect. Grow. Create. Earn.</h1>
+    <p>A community to share ideas, discover businesses, find opportunities, learn skills and grow together.</p>
+    <a class="button" href="#businesses">Discover businesses</a>
+    <a class="button secondary" href="#feed">Join the community</a>
+  </section>
+
+  <main class="container">
+    <section class="section" id="feed">
+      <h2>Community Feed</h2>
+      <p class="subheading">Share an idea, update or useful information with the community.</p>
+      <div class="layout">
+        <div>
+          <div id="postsList"></div>
+        </div>
+        <form class="card" id="postForm">
+          <h3>Create a post</h3>
+          <label for="postName">Your name</label>
+          <input id="postName" maxlength="60" required placeholder="Enter your name">
+          <label for="postText">Your message</label>
+          <textarea id="postText" maxlength="2000" required placeholder="What would you like to share?"></textarea>
+          <button type="submit">Publish post</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="businesses">
+      <h2>Business Hub</h2>
+      <p class="subheading">Help people discover your products and services.</p>
+      <div class="layout">
+        <div id="businessesList"></div>
+        <form class="card" id="businessForm">
+          <h3>Advertise your business</h3>
+          <label for="businessName">Business name</label>
+          <input id="businessName" maxlength="100" required placeholder="e.g. Bright Star Designs">
+          <label for="businessCategory">Category</label>
+          <select id="businessCategory" required>
+            <option value="">Choose a category</option>
+            <option>Fashion</option>
+            <option>Food</option>
+            <option>Technology</option>
+            <option>Beauty</option>
+            <option>Education</option>
+            <option>Design and Creative</option>
+            <option>Agriculture</option>
+            <option>Other</option>
+          </select>
+          <label for="businessDescription">What do you offer?</label>
+          <textarea id="businessDescription" maxlength="1500" required placeholder="Describe your products or services"></textarea>
+          <label for="businessContact">Contact link or phone (optional)</label>
+          <input id="businessContact" maxlength="200" placeholder="Phone number or website link">
+          <button type="submit">Publish business</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="opportunities">
+      <h2>Opportunity Hub</h2>
+      <p class="subheading">Share jobs, internships, scholarships and other opportunities. Check offers carefully before applying.</p>
+      <div class="layout">
+        <div id="opportunitiesList"></div>
+        <form class="card" id="opportunityForm">
+          <h3>Share an opportunity</h3>
+          <label for="opportunityTitle">Title</label>
+          <input id="opportunityTitle" maxlength="120" required placeholder="e.g. Web Design Internship">
+          <label for="opportunityType">Type</label>
+          <select id="opportunityType" required>
+            <option value="">Choose a type</option>
+            <option>Job</option>
+            <option>Internship</option>
+            <option>Scholarship</option>
+            <option>Training</option>
+            <option>Business opportunity</option>
+            <option>Other</option>
+          </select>
+          <label for="opportunityDescription">Details</label>
+          <textarea id="opportunityDescription" maxlength="2000" required placeholder="Explain the opportunity and requirements"></textarea>
+          <label for="opportunityLink">Application link (optional)</label>
+          <input id="opportunityLink" maxlength="500" type="url" placeholder="https://example.com">
+          <button type="submit">Publish opportunity</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="skills">
+      <h2>Skills and Learning</h2>
+      <p class="subheading">Learn something useful and take a step towards your goals.</p>
+      <div class="layout">
+        <article class="card">
+          <span class="tag">Technology</span>
+          <h3>Start learning web development</h3>
+          <p>Learn HTML for page structure, CSS for design and JavaScript for interactive features.</p>
+          <a class="button" href="https://developer.mozilla.org/en-US/docs/Learn_web_development" target="_blank" rel="noopener noreferrer">Explore learning</a>
+        </article>
+        <article class="card">
+          <span class="tag">Community</span>
+          <h3>Grow by sharing</h3>
+          <p>Share what you know, learn from others and discover ideas that could help your community.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3>Manage your local demo data</h3>
+        <p class="muted">This version saves information in this browser on this device. It does not publish posts to other people's devices yet.</p>
+        <button class="secondary" type="button" id="exportButton">Back up my data</button>
+        <button type="button" id="clearButton">Clear all local data</button>
+        <p class="muted" id="storageStatus" role="status">Checking local storage…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 Vynora · Connect. Grow. Create. Earn.</footer>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "vynoraDataV2";
+
+    function emptyData() {
+      return { posts: [], businesses: [], opportunities: [] };
+    }
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return emptyData();
+
+        const parsed = JSON.parse(saved);
+        return {
+          posts: Array.isArray(parsed.posts) ? parsed.posts : [],
+          businesses: Array.isArray(parsed.businesses) ? parsed.businesses : [],
+          opportunities: Array.isArray(parsed.opportunities) ? parsed.opportunities : []
+        };
+      } catch (error) {
+        console.error("Could not load Vynora data:", error);
+        return emptyData();
+      }
+    }
+
+    let data = loadData();
+
+    function saveData() {
+      try {
+        const serialized = JSON.stringify(data);
+        localStorage.setItem(STORAGE_KEY, serialized);
+
+        if (localStorage.getItem(STORAGE_KEY) !== serialized) {
+          throw new Error("Saved data could not be verified.");
+        }
+
+        updateStorageStatus("Your data is saved in this browser.");
+        return true;
+      } catch (error) {
+        console.error("Could not save Vynora data:", error);
+        updateStorageStatus("Saving failed. Check browser storage settings.");
+        alert("Vynora could not save your data. Please check the browser storage settings.");
+        return false;
+      }
+    }
+
+    function updateStorageStatus(message) {
+      document.getElementById("storageStatus").textContent = message;
+    }
+
+    function safeText(value) {
+      return String(value ?? "");
+    }
+
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = safeText(text);
+      return element;
+    }
+
+    function makeCard(title, category, description, details, item, collection) {
+      const card = makeElement("article", "card");
+      if (category) card.appendChild(makeElement("span", "tag", category));
+      card.appendChild(makeElement("h3", "", title));
+      card.appendChild(makeElement("p", "", description));
+
+      if (details) card.appendChild(makeElement("p", "muted", details));
+
+      const actions = makeElement("div", "actions");
+
+      if (collection === "posts") {
+        const likeButton = makeElement("button", "secondary", "♥ Like (" + (item.likes || 0) + ")");
+        likeButton.type = "button";
+        likeButton.addEventListener("click", () => {
+          item.likes = (item.likes || 0) + 1;
+          if (saveData()) renderAll();
+        });
+        actions.appendChild(likeButton);
+      }
+
+      const deleteButton = makeElement("button", "secondary", "Delete");
+      deleteButton.type = "button";
+      deleteButton.addEventListener("click", () => {
+        if (!confirm("Delete this item from this browser?")) return;
+        const index = data[collection].findIndex(entry => entry.id === item.id);
+        if (index < 0) return;
+        const removed = data[collection].splice(index, 1)[0];
+        if (saveData()) {
+          renderAll();
+        } else {
+          data[collection].splice(index, 0, removed);
+          renderAll();
+        }
+      });
+      actions.appendChild(deleteButton);
+
+      card.appendChild(actions);
+      return card;
+    }
+
+    function renderCollection(elementId, items, emptyMessage, builder) {
+      const container = document.getElementById(elementId);
+      container.replaceChildren();
+
+      if (!items.length) {
+        container.appendChild(makeElement("div", "empty", emptyMessage));
+        return;
+      }
+
+      [...items].reverse().forEach(item => container.appendChild(builder(item)));
+    }
+
+    function renderAll() {
+      renderCollection("postsList", data.posts, "No community posts yet. Be the first to share!", item =>
+        makeCard(item.name, "Community post", item.message, item.date, item, "posts")
+      );
+
+      renderCollection("businessesList", data.businesses, "No businesses listed yet. Add the first business!", item =>
+        makeCard(item.name, item.category, item.description,
+          item.contact ? "Contact: " + item.contact : item.date, item, "businesses")
+      );
+
+      renderCollection("opportunitiesList", data.opportunities, "No opportunities posted yet. Share a useful opportunity!", item => {
+        const card = makeCard(item.title, item.type, item.description, item.date, item, "opportunities");
+        if (item.link) {
+          const link = makeElement("a", "button", "View opportunity");
+          link.href = item.link;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          card.insertBefore(link, card.lastElementChild);
+        }
+        return card;
+      });
+    }
+
+    function newId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    }
+
+    function today() {
+      return new Date().toLocaleString();
+    }
+
+    function submitItem(event, collection, item, formId) {
+      event.preventDefault();
+      data[collection].push({ id: newId(), date: today(), ...item });
+
+      if (saveData()) {
+        document.getElementById(formId).reset();
+        renderAll();
+        alert("Saved successfully on this device!");
+      } else {
+        data[collection].pop();
+      }
+    }
+
+    document.getElementById("postForm").addEventListener("submit", event => {
+      submitItem(event, "posts", {
+        name: document.getElementById("postName").value.trim(),
+        message: document.getElementById("postText").value.trim(),
+        likes: 0
+      }, "postForm");
+    });
+
+    document.getElementById("businessForm").addEventListener("submit", event => {
+      submitItem(event, "businesses", {
+        name: document.getElementById("businessName").value.trim(),
+        category: document.getElementById("businessCategory").value,
+        description: document.getElementById("businessDescription").value.trim(),
+        contact: document.getElementById("businessContact").value.trim()
+      }, "businessForm");
+    });
+
+    document.getElementById("opportunityForm").addEventListener("submit", event => {
+      const link = document.getElementById("opportunityLink").value.trim();
+      if (link && !/^https?:\/\//i.test(link)) {
+        event.preventDefault();
+        alert("Please use an application link starting with https:// or http://");
+        return;
+      }
+
+      submitItem(event, "opportunities", {
+        title: document.getElementById("opportunityTitle").value.trim(),
+        type: document.getElementById("opportunityType").value,
+        description: document.getElementById("opportunityDescription").value.trim(),
+        link
+      }, "opportunityForm");
+    });
+
+    document.getElementById("exportButton").addEventListener("click", () => {
+      const file = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "vynora-backup.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("clearButton").addEventListener("click", () => {
+      if (!confirm("This will delete all Vynora posts, businesses and opportunities saved in this browser. Continue?")) return;
+      const previous = data;
+      data = emptyData();
+      if (saveData()) {
+        renderAll();
+        alert("Local demo data cleared.");
+      } else {
+        data = previous;
+        renderAll();
+      }
+    });
+
+    try {
+      localStorage.setItem("__vynoraTest", "ok");
+      localStorage.removeItem("__vynoraTest");
+      updateStorageStatus("Browser storage is available. Your data is saved locally.");
+    } catch (error) {
+      updateStorageStatus("Browser storage is blocked. Data may not persist after refresh.");
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
