@@ -133,6 +133,38 @@
   </style>
 </head>
 <body>
+  
+<section id="account-section" style="max-width:500px;margin:24px auto;padding:20px;border-radius:16px;background:#f3edff;color:#24143d;">
+  <h2>Welcome to Vynora</h2>
+  <p>Connect. Grow. Create. Earn.</p>
+
+  <form id="signup-form">
+    <h3>Create your account</h3>
+    <label for="signup-email">Email address</label>
+    <input id="signup-email" type="email" required placeholder="Enter your email" style="display:block;width:100%;padding:12px;margin:8px 0 14px;box-sizing:border-box;">
+
+    <label for="signup-password">Password</label>
+    <input id="signup-password" type="password" required minlength="8" placeholder="At least 8 characters" style="display:block;width:100%;padding:12px;margin:8px 0 14px;box-sizing:border-box;">
+
+    <button type="submit" style="padding:12px 18px;border:0;border-radius:8px;background:#673ab7;color:white;">Sign up</button>
+  </form>
+
+  <hr style="margin:22px 0;">
+
+  <form id="signin-form">
+    <h3>Already have an account?</h3>
+    <label for="signin-email">Email address</label>
+    <input id="signin-email" type="email" required placeholder="Enter your email" style="display:block;width:100%;padding:12px;margin:8px 0 14px;box-sizing:border-box;">
+
+    <label for="signin-password">Password</label>
+    <input id="signin-password" type="password" required placeholder="Enter your password" style="display:block;width:100%;padding:12px;margin:8px 0 14px;box-sizing:border-box;">
+
+    <button type="submit" style="padding:12px 18px;border:0;border-radius:8px;background:#673ab7;color:white;">Sign in</button>
+  </form>
+
+  <p id="account-message" role="status" aria-live="polite"></p>
+</section>
+
   <header>
     <div class="logo">Vynora</div>
     <nav>
@@ -445,22 +477,65 @@
     });
 
     
-    async function startVynora() {
-      if (!window.supabase || !window.supabase.createClient) {
-        showStatus("The Supabase library could not load. Check your internet connection and refresh.", "error");
-        return;
-      }
+  
+async function startVynora() {
+  if (!window.supabase || !window.supabase.createClient) {
+    showStatus("The Supabase library could not load. Check your internet connection and refresh.", "error");
+    return;
+  }
 
-      supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-      );
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-      await loadAll();
+  await loadAll();
+
+  document.getElementById("signup-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById("signup-email").value.trim();
+    const password = document.getElementById("signup-password").value;
+    const message = document.getElementById("account-message");
+
+    message.textContent = "Creating your account...";
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      message.textContent = error.message;
+      return;
     }
 
-    
-    startVynora();
-  </script>
+    message.textContent = data.session
+      ? "Account created! You are signed in."
+      : "Account created! Check your email to confirm your account.";
+  });
+
+  document.getElementById("signin-form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById("signin-email").value.trim();
+    const password = document.getElementById("signin-password").value;
+    const message = document.getElementById("account-message");
+
+    message.textContent = "Signing in...";
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    message.textContent = error
+      ? error.message
+      : "You are signed in successfully!";
+  });
+}
+
+startVynora();
+</script>
 </body>
 </html>
