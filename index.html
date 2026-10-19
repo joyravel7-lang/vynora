@@ -444,13 +444,10 @@
       URL.revokeObjectURL(url);
     });
 
+    
     async function startVynora() {
       if (!window.supabase || !window.supabase.createClient) {
         showStatus("The Supabase library could not load. Check your internet connection and refresh.", "error");
-        return;
-      }
-
-      
         return;
       }
 
@@ -462,6 +459,7 @@
       await loadAll();
     }
 
+    
     startVynora();
   </script>
 </body>
