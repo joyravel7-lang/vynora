@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6638d3">
   <title>Vynora | Connect. Grow. Create. Earn.</title>
+  <meta name="description" content="Discover businesses, share ideas, find opportunities and learn skills with Vynora.">
+
   <style>
     :root {
       --purple: #6638d3;
@@ -26,7 +29,7 @@
     }
 
     header {
-      background: var(--white);
+      background: white;
       padding: 16px 6%;
       display: flex;
       justify-content: space-between;
@@ -37,8 +40,10 @@
     }
 
     .logo { font-size: 26px; font-weight: 800; color: var(--purple); }
+
     nav { display: flex; gap: 18px; flex-wrap: wrap; }
     nav a { color: var(--dark); text-decoration: none; font-weight: 600; }
+    nav a:hover { color: var(--purple); }
 
     .hero {
       padding: 55px 6%;
@@ -48,6 +53,7 @@
 
     .hero h1 { font-size: clamp(32px, 5vw, 48px); margin: 0 0 12px; }
     .hero p { max-width: 600px; font-size: 17px; }
+
     .container { max-width: 1100px; margin: auto; padding: 28px 18px; }
     .section { margin-bottom: 36px; scroll-margin-top: 20px; }
     .section h2 { margin-bottom: 5px; }
@@ -61,7 +67,7 @@
     }
 
     .card {
-      background: var(--white);
+      background: white;
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 20px;
@@ -70,6 +76,7 @@
     }
 
     .card h3 { margin-top: 0; margin-bottom: 8px; }
+
     .tag {
       display: inline-block;
       background: #eee7ff;
@@ -111,10 +118,11 @@
     button:hover, .button:hover { background: #4d25ad; }
     .secondary { background: #eee7ff; color: #4d29a0; }
     .secondary:hover { background: #ded1ff; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .actions button { margin-top: 10px; }
     .muted { color: var(--muted); font-size: 14px; }
     .empty { padding: 20px; border: 1px dashed #cfc3e3; border-radius: 12px; color: var(--muted); }
+    .status { padding: 12px; border-radius: 9px; background: #eee7ff; margin: 12px 0; }
+    .status.error { background: #fff0f0; color: #a21c1c; }
+    .status.success { background: #e8f8ef; color: #17663c; }
     footer { padding: 28px 18px; text-align: center; color: var(--muted); }
 
     @media (max-width: 700px) {
@@ -143,17 +151,19 @@
   </section>
 
   <main class="container">
+    <div id="connectionStatus" class="status" role="status" aria-live="polite">
+      Connecting to Vynora...
+    </div>
+
     <section class="section" id="feed">
       <h2>Community Feed</h2>
       <p class="subheading">Share an idea, update or useful information with the community.</p>
       <div class="layout">
-        <div>
-          <div id="postsList"></div>
-        </div>
+        <div id="postsList"><div class="empty">Loading community posts...</div></div>
         <form class="card" id="postForm">
           <h3>Create a post</h3>
           <label for="postName">Your name</label>
-          <input id="postName" maxlength="60" required placeholder="Enter your name">
+          <input id="postName" maxlength="80" required placeholder="Enter your name">
           <label for="postText">Your message</label>
           <textarea id="postText" maxlength="2000" required placeholder="What would you like to share?"></textarea>
           <button type="submit">Publish post</button>
@@ -165,11 +175,11 @@
       <h2>Business Hub</h2>
       <p class="subheading">Help people discover your products and services.</p>
       <div class="layout">
-        <div id="businessesList"></div>
+        <div id="businessesList"><div class="empty">Loading businesses...</div></div>
         <form class="card" id="businessForm">
           <h3>Advertise your business</h3>
           <label for="businessName">Business name</label>
-          <input id="businessName" maxlength="100" required placeholder="e.g. Bright Star Designs">
+          <input id="businessName" maxlength="120" required placeholder="e.g. Bright Star Designs">
           <label for="businessCategory">Category</label>
           <select id="businessCategory" required>
             <option value="">Choose a category</option>
@@ -183,9 +193,9 @@
             <option>Other</option>
           </select>
           <label for="businessDescription">What do you offer?</label>
-          <textarea id="businessDescription" maxlength="1500" required placeholder="Describe your products or services"></textarea>
+          <textarea id="businessDescription" maxlength="2000" required placeholder="Describe your products or services"></textarea>
           <label for="businessContact">Contact link or phone (optional)</label>
-          <input id="businessContact" maxlength="200" placeholder="Phone number or website link">
+          <input id="businessContact" maxlength="200" placeholder="Business contact information">
           <button type="submit">Publish business</button>
         </form>
       </div>
@@ -195,11 +205,11 @@
       <h2>Opportunity Hub</h2>
       <p class="subheading">Share jobs, internships, scholarships and other opportunities. Check offers carefully before applying.</p>
       <div class="layout">
-        <div id="opportunitiesList"></div>
+        <div id="opportunitiesList"><div class="empty">Loading opportunities...</div></div>
         <form class="card" id="opportunityForm">
           <h3>Share an opportunity</h3>
           <label for="opportunityTitle">Title</label>
-          <input id="opportunityTitle" maxlength="120" required placeholder="e.g. Web Design Internship">
+          <input id="opportunityTitle" maxlength="160" required placeholder="e.g. Web Design Internship">
           <label for="opportunityType">Type</label>
           <select id="opportunityType" required>
             <option value="">Choose a type</option>
@@ -211,7 +221,7 @@
             <option>Other</option>
           </select>
           <label for="opportunityDescription">Details</label>
-          <textarea id="opportunityDescription" maxlength="2000" required placeholder="Explain the opportunity and requirements"></textarea>
+          <textarea id="opportunityDescription" maxlength="3000" required placeholder="Explain the opportunity and requirements"></textarea>
           <label for="opportunityLink">Application link (optional)</label>
           <input id="opportunityLink" maxlength="500" type="url" placeholder="https://example.com">
           <button type="submit">Publish opportunity</button>
@@ -239,240 +249,221 @@
 
     <section class="section">
       <div class="card">
-        <h3>Manage your local demo data</h3>
-        <p class="muted">This version saves information in this browser on this device. It does not publish posts to other people's devices yet.</p>
-        <button class="secondary" type="button" id="exportButton">Back up my data</button>
-        <button type="button" id="clearButton">Clear all local data</button>
-        <p class="muted" id="storageStatus" role="status">Checking local storage…</p>
+        <h3>Back up shared data</h3>
+        <p class="muted">Download a copy of the posts, businesses and opportunities currently loaded from the database.</p>
+        <button class="secondary" type="button" id="exportButton">Download data backup</button>
       </div>
     </section>
   </main>
 
   <footer>© 2026 Vynora · Connect. Grow. Create. Earn.</footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     "use strict";
 
-    const STORAGE_KEY = "vynoraDataV2";
+    // These are the public project URL and publishable key.
+    // Never put a Supabase secret key in website code.
+    const SUPABASE_URL = "https://nongcuwgdowsqmchteur.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
 
-    function emptyData() {
-      return { posts: [], businesses: [], opportunities: [] };
+    const statusBox = document.getElementById("connectionStatus");
+    let supabaseClient = null;
+    let sharedData = { posts: [], businesses: [], opportunities: [] };
+
+    function showStatus(message, type = "") {
+      statusBox.textContent = message;
+      statusBox.className = "status" + (type ? " " + type : "");
     }
 
-    function loadData() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return emptyData();
-
-        const parsed = JSON.parse(saved);
-        return {
-          posts: Array.isArray(parsed.posts) ? parsed.posts : [],
-          businesses: Array.isArray(parsed.businesses) ? parsed.businesses : [],
-          opportunities: Array.isArray(parsed.opportunities) ? parsed.opportunities : []
-        };
-      } catch (error) {
-        console.error("Could not load Vynora data:", error);
-        return emptyData();
-      }
+    function element(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text !== undefined) el.textContent = String(text ?? "");
+      return el;
     }
 
-    let data = loadData();
+    function makeCard(title, category, description, detail, link) {
+      const card = element("article", "card");
+      if (category) card.appendChild(element("span", "tag", category));
+      card.appendChild(element("h3", "", title));
+      card.appendChild(element("p", "", description));
 
-    function saveData() {
-      try {
-        const serialized = JSON.stringify(data);
-        localStorage.setItem(STORAGE_KEY, serialized);
+      if (detail) card.appendChild(element("p", "muted", detail));
 
-        if (localStorage.getItem(STORAGE_KEY) !== serialized) {
-          throw new Error("Saved data could not be verified.");
+      if (link) {
+        const safeUrl = safeHttpUrl(link);
+        if (safeUrl) {
+          const a = element("a", "button", "View opportunity");
+          a.href = safeUrl;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          card.appendChild(a);
         }
-
-        updateStorageStatus("Your data is saved in this browser.");
-        return true;
-      } catch (error) {
-        console.error("Could not save Vynora data:", error);
-        updateStorageStatus("Saving failed. Check browser storage settings.");
-        alert("Vynora could not save your data. Please check the browser storage settings.");
-        return false;
       }
-    }
-
-    function updateStorageStatus(message) {
-      document.getElementById("storageStatus").textContent = message;
-    }
-
-    function safeText(value) {
-      return String(value ?? "");
-    }
-
-    function makeElement(tag, className, text) {
-      const element = document.createElement(tag);
-      if (className) element.className = className;
-      if (text !== undefined) element.textContent = safeText(text);
-      return element;
-    }
-
-    function makeCard(title, category, description, details, item, collection) {
-      const card = makeElement("article", "card");
-      if (category) card.appendChild(makeElement("span", "tag", category));
-      card.appendChild(makeElement("h3", "", title));
-      card.appendChild(makeElement("p", "", description));
-
-      if (details) card.appendChild(makeElement("p", "muted", details));
-
-      const actions = makeElement("div", "actions");
-
-      if (collection === "posts") {
-        const likeButton = makeElement("button", "secondary", "♥ Like (" + (item.likes || 0) + ")");
-        likeButton.type = "button";
-        likeButton.addEventListener("click", () => {
-          item.likes = (item.likes || 0) + 1;
-          if (saveData()) renderAll();
-        });
-        actions.appendChild(likeButton);
-      }
-
-      const deleteButton = makeElement("button", "secondary", "Delete");
-      deleteButton.type = "button";
-      deleteButton.addEventListener("click", () => {
-        if (!confirm("Delete this item from this browser?")) return;
-        const index = data[collection].findIndex(entry => entry.id === item.id);
-        if (index < 0) return;
-        const removed = data[collection].splice(index, 1)[0];
-        if (saveData()) {
-          renderAll();
-        } else {
-          data[collection].splice(index, 0, removed);
-          renderAll();
-        }
-      });
-      actions.appendChild(deleteButton);
-
-      card.appendChild(actions);
       return card;
     }
 
-    function renderCollection(elementId, items, emptyMessage, builder) {
-      const container = document.getElementById(elementId);
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+      } catch {
+        return "";
+      }
+    }
+
+    function renderList(id, items, emptyMessage, makeItem) {
+      const container = document.getElementById(id);
       container.replaceChildren();
 
       if (!items.length) {
-        container.appendChild(makeElement("div", "empty", emptyMessage));
+        container.appendChild(element("div", "empty", emptyMessage));
         return;
       }
 
-      [...items].reverse().forEach(item => container.appendChild(builder(item)));
+      items.forEach(item => container.appendChild(makeItem(item)));
     }
 
     function renderAll() {
-      renderCollection("postsList", data.posts, "No community posts yet. Be the first to share!", item =>
-        makeCard(item.name, "Community post", item.message, item.date, item, "posts")
+      renderList("postsList", sharedData.posts, "No community posts yet. Be the first to share!", item =>
+        makeCard(item.author_name, "Community post", item.content,
+          item.created_at ? new Date(item.created_at).toLocaleString() : "")
       );
 
-      renderCollection("businessesList", data.businesses, "No businesses listed yet. Add the first business!", item =>
-        makeCard(item.name, item.category, item.description,
-          item.contact ? "Contact: " + item.contact : item.date, item, "businesses")
+      renderList("businessesList", sharedData.businesses, "No businesses listed yet. Add the first business!", item =>
+        makeCard(item.business_name, item.category, item.description,
+          item.contact ? "Contact: " + item.contact : "")
       );
 
-      renderCollection("opportunitiesList", data.opportunities, "No opportunities posted yet. Share a useful opportunity!", item => {
-        const card = makeCard(item.title, item.type, item.description, item.date, item, "opportunities");
-        if (item.link) {
-          const link = makeElement("a", "button", "View opportunity");
-          link.href = item.link;
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
-          card.insertBefore(link, card.lastElementChild);
-        }
-        return card;
-      });
+      renderList("opportunitiesList", sharedData.opportunities, "No opportunities posted yet. Share a useful opportunity!", item =>
+        makeCard(item.title, item.category, item.description, "", item.application_link)
+      );
     }
 
-    function newId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    async function loadTable(tableName) {
+      const { data, error } = await supabaseClient
+        .from(tableName)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) throw new Error(tableName + ": " + error.message);
+      return data || [];
     }
 
-    function today() {
-      return new Date().toLocaleString();
-    }
+    async function loadAll() {
+      try {
+        const [posts, businesses, opportunities] = await Promise.all([
+          loadTable("posts"),
+          loadTable("businesses"),
+          loadTable("opportunities")
+        ]);
 
-    function submitItem(event, collection, item, formId) {
-      event.preventDefault();
-      data[collection].push({ id: newId(), date: today(), ...item });
-
-      if (saveData()) {
-        document.getElementById(formId).reset();
+        sharedData = { posts, businesses, opportunities };
         renderAll();
-        alert("Saved successfully on this device!");
-      } else {
-        data[collection].pop();
+        showStatus("Connected! Vynora is showing shared community data.", "success");
+      } catch (error) {
+        console.error("Vynora database read failed:", error);
+        showStatus("Could not load shared data. Check Supabase API settings, table permissions and RLS policies. Details are in the browser console.", "error");
       }
     }
 
-    document.getElementById("postForm").addEventListener("submit", event => {
-      submitItem(event, "posts", {
-        name: document.getElementById("postName").value.trim(),
-        message: document.getElementById("postText").value.trim(),
-        likes: 0
-      }, "postForm");
+    async function publish(tableName, row, formId) {
+      const button = document.querySelector("#" + formId + ' button[type="submit"]');
+      button.disabled = true;
+      button.textContent = "Publishing...";
+
+      try {
+        const { error } = await supabaseClient.from(tableName).insert(row);
+        if (error) throw error;
+
+        document.getElementById(formId).reset();
+        showStatus("Published successfully! Refreshing shared data...", "success");
+        await loadAll();
+      } catch (error) {
+        console.error("Vynora publish failed:", error);
+        showStatus("Publishing failed: " + (error.message || "Please check your database settings and try again."), "error");
+      } finally {
+        button.disabled = false;
+        button.textContent =
+          formId === "postForm" ? "Publish post" :
+          formId === "businessForm" ? "Publish business" :
+          "Publish opportunity";
+      }
+    }
+
+    document.getElementById("postForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const author_name = document.getElementById("postName").value.trim();
+      const content = document.getElementById("postText").value.trim();
+      if (!author_name || !content) return;
+
+      await publish("posts", { author_name, content }, "postForm");
     });
 
-    document.getElementById("businessForm").addEventListener("submit", event => {
-      submitItem(event, "businesses", {
-        name: document.getElementById("businessName").value.trim(),
-        category: document.getElementById("businessCategory").value,
-        description: document.getElementById("businessDescription").value.trim(),
-        contact: document.getElementById("businessContact").value.trim()
-      }, "businessForm");
+    document.getElementById("businessForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const business_name = document.getElementById("businessName").value.trim();
+      const category = document.getElementById("businessCategory").value;
+      const description = document.getElementById("businessDescription").value.trim();
+      const contact = document.getElementById("businessContact").value.trim();
+      if (!business_name || !category || !description) return;
+
+      await publish("businesses", { business_name, category, description, contact: contact || null }, "businessForm");
     });
 
-    document.getElementById("opportunityForm").addEventListener("submit", event => {
-      const link = document.getElementById("opportunityLink").value.trim();
-      if (link && !/^https?:\/\//i.test(link)) {
-        event.preventDefault();
-        alert("Please use an application link starting with https:// or http://");
+    document.getElementById("opportunityForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      const title = document.getElementById("opportunityTitle").value.trim();
+      const category = document.getElementById("opportunityType").value;
+      const description = document.getElementById("opportunityDescription").value.trim();
+      const rawLink = document.getElementById("opportunityLink").value.trim();
+      if (!title || !category || !description) return;
+
+      if (rawLink && !safeHttpUrl(rawLink)) {
+        showStatus("Please enter a valid link starting with https:// or http://", "error");
         return;
       }
 
-      submitItem(event, "opportunities", {
-        title: document.getElementById("opportunityTitle").value.trim(),
-        type: document.getElementById("opportunityType").value,
-        description: document.getElementById("opportunityDescription").value.trim(),
-        link
+      await publish("opportunities", {
+        title,
+        category,
+        description,
+        application_link: rawLink || null
       }, "opportunityForm");
     });
 
     document.getElementById("exportButton").addEventListener("click", () => {
-      const file = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const file = new Blob([JSON.stringify(sharedData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(file);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "vynora-backup.json";
-      link.click();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "vynora-shared-data-backup.json";
+      a.click();
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById("clearButton").addEventListener("click", () => {
-      if (!confirm("This will delete all Vynora posts, businesses and opportunities saved in this browser. Continue?")) return;
-      const previous = data;
-      data = emptyData();
-      if (saveData()) {
-        renderAll();
-        alert("Local demo data cleared.");
-      } else {
-        data = previous;
-        renderAll();
+    async function startVynora() {
+      if (!window.supabase || !window.supabase.createClient) {
+        showStatus("The Supabase library could not load. Check your internet connection and refresh.", "error");
+        return;
       }
-    });
 
-    try {
-      localStorage.setItem("__vynoraTest", "ok");
-      localStorage.removeItem("__vynoraTest");
-      updateStorageStatus("Browser storage is available. Your data is saved locally.");
-    } catch (error) {
-      updateStorageStatus("Browser storage is blocked. Data may not persist after refresh.");
+      if (SUPABASE_PUBLISHABLE_KEY === "sb_publishable_FkqYGsxbYMMN9m_J7MR5zA_N4W3JBbx") {
+        showStatus("The Supabase publishable key still needs to be added to the code.", "error");
+        return;
+      }
+
+      supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+      await loadAll();
     }
 
-    renderAll();
+    startVynora();
   </script>
 </body>
 </html>
