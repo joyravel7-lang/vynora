@@ -299,10 +299,11 @@
     const SUPABASE_URL = "https://nongcuwgdowsqmchteur.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_FkqYGsxbYMMN9m_J7MR5zA_N4W3JBbx";
 
-    const statusBox = document.getElementById("connectionStatus");
     let supabaseClient = null;
-    let sharedData = { posts: [], businesses: [], opportunities: [] };
-
+let currentUser = null;
+let sharedData = { posts: [], businesses: [], opportunities: [] };
+    let editingItem = null;
+    
     function showStatus(message, type = "") {
       statusBox.textContent = message;
       statusBox.className = "status" + (type ? " " + type : "");
@@ -314,36 +315,137 @@
       if (text !== undefined) el.textContent = String(text ?? "");
       return el;
     }
+    function makeCard(title, category, description, detail, link, tableName, item) {
+  const card = element("article", "card");
 
-    function makeCard(title, category, description, detail, link) {
-      const card = element("article", "card");
-      if (category) card.appendChild(element("span", "tag", category));
-      card.appendChild(element("h3", "", title));
-      card.appendChild(element("p", "", description));
+  if (category) card.appendChild(element("span", "tag", category));
+  card.appendChild(element("h3", "", title));
+  card.appendChild(element("p", "", description));
 
-      if (detail) card.appendChild(element("p", "muted", detail));
+  if (detail) card.appendChild(element("p", "muted", detail));
 
-      if (link) {
-        const safeUrl = safeHttpUrl(link);
-        if (safeUrl) {
-          const a = element("a", "button", "View opportunity");
-          a.href = safeUrl;
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
-          card.appendChild(a);
-        }
-      }
-      return card;
+  if (link) {
+    const safeUrl = safeHttpUrl(link);
+    if (safeUrl) {
+      const a = element("a", "button", "View opportunity");
+      a.href = safeUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      card.appendChild(a);
     }
+  }
 
+  if (
+    currentUser &&
+    item &&
+    item.user_id === currentUser.id &&
+    item.id &&
+    tableName
+  ) {
+    const editButton = element("button", "button", "Edit");
+    editButton.type = "button";
+    editButton.addEventListener("click", () => editItem(tableName, item));
+
+    const deleteButton = element("button", "button", "Delete");
+    deleteButton.type = "button";
+    deleteButton.addEventListener("click", () => deleteItem(tableName, item));
+
+    card.appendChild(editButton);
+    card.appendChild(deleteButton);
+  }
+
+  return card;
+}
+  
+async function deleteItem(tableName, item) {
+  if (!currentUser || item.user_id !== currentUser.id || !item.id) {
+    showStatus("You can only delete your own content.", "error");
+    return;
+  }
+  
+  if (
+    editingItem &&
+    editingItem.tableName === tableName &&
+    editingItem.id === item.id
+  ) {
+    editingItem = null;
+  }
+  if (!confirm("Are you sure you want to delete this item? This cannot be undone.")) {
+    return;
+  }
+  if (
+  editingItem &&
+  editingItem.tableName === tableName &&
+  editingItem.id === item.id
+) {
+  editingItem = null;
+}
+
+  try {
+    const { error } = await supabaseClient
+      .from(tableName)
+      .delete()
+      .eq("id", item.id)
+      .eq("user_id", currentUser.id);
+
+    if (error) throw error;
+
+    showStatus("Item deleted successfully.", "success");
+    await loadAll();
+  } catch (error) {
+    console.error("Vynora delete failed:", error);
+    showStatus("Could not delete this item: " + error.message, "error");
+  }
+}
+ function editItem(tableName, item) {
+  if (!currentUser || item.user_id !== currentUser.id || !item.id) {
+    showStatus("You can only edit your own content.", "error");
+    return;
+  }
+  editingItem = {
+    tableName: tableName,
+    id: item.id,
+    user_id: item.user_id
+  };
+  if (tableName === "posts") {
+    document.getElementById("postName").value = item.author_name || "";
+    document.getElementById("postText").value = item.content || "";
+    document.getElementById("postText").focus();
+  } else if (tableName === "businesses") {
+    document.getElementById("businessName").value = item.business_name || "";
+    document.getElementById("businessCategory").value = item.category || "";
+    document.getElementById("businessDescription").value = item.description || "";
+    document.getElementById("businessContact").value = item.contact || "";
+    document.getElementById("businessName").focus();
+  } else if (tableName === "opportunities") {
+    document.getElementById("opportunityTitle").value = item.title || "";
+    document.getElementById("opportunityType").value = item.category || "";
+    document.getElementById("opportunityDescription").value = item.description || "";
+    document.getElementById("opportunityLink").value = item.application_link || "";
+    document.getElementById("opportunityTitle").focus();
+  }
+  const form = document.getElementById(
+    tableName === "posts" ? "postForm" :
+    tableName === "businesses" ? "businessForm" :
+    "opportunityForm"
+  );
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  submitButton.textContent = "Save changes";
+ showStatus("Your content is in the form. Editing is not saved yet.", "success");
+}
+    
+        
     function safeHttpUrl(value) {
-      try {
-        const url = new URL(value);
-        return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
-      } catch {
-        return "";
-      }
-    }
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.href
+      : "";
+  } catch {
+    return "";
+  }
+}
 
     function renderList(id, items, emptyMessage, makeItem) {
       const container = document.getElementById(id);
@@ -352,26 +454,30 @@
       if (!items.length) {
         container.appendChild(element("div", "empty", emptyMessage));
         return;
+        
       }
 
       items.forEach(item => container.appendChild(makeItem(item)));
     }
 
-    function renderAll() {
-      renderList("postsList", sharedData.posts, "No community posts yet. Be the first to share!", item =>
-        makeCard(item.author_name, "Community post", item.content,
-          item.created_at ? new Date(item.created_at).toLocaleString() : "")
-      );
+   function renderAll() {
+  renderList("postsList", sharedData.posts, "No community posts yet. Be the first to share!", item =>
+    makeCard(item.author_name, "Community post", item.content,
+      item.created_at ? new Date(item.created_at).toLocaleString() : "",
+      null, "posts", item)
+  );
 
-      renderList("businessesList", sharedData.businesses, "No businesses listed yet. Add the first business!", item =>
-        makeCard(item.business_name, item.category, item.description,
-          item.contact ? "Contact: " + item.contact : "")
-      );
+  renderList("businessesList", sharedData.businesses, "No businesses listed yet. Add the first business!", item =>
+    makeCard(item.business_name, item.category, item.description,
+      item.contact ? "Contact: " + item.contact : "",
+      null, "businesses", item)
+  );
 
-      renderList("opportunitiesList", sharedData.opportunities, "No opportunities posted yet. Share a useful opportunity!", item =>
-        makeCard(item.title, item.category, item.description, "", item.application_link)
-      );
-    }
+  renderList("opportunitiesList", sharedData.opportunities, "No opportunities posted yet. Share a useful opportunity!", item =>
+    makeCard(item.title, item.category, item.description, "",
+      item.application_link, "opportunities", item)
+  );
+}
 
     async function loadTable(tableName) {
       const { data, error } = await supabaseClient
@@ -401,38 +507,75 @@
       }
     }
 
-    async function publish(tableName, row, formId) {
-     const { data: { user }, error: authError } =
-  await supabaseClient.auth.getUser();
+    
+async function publish(tableName, row, formId) {
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
 
-if (authError || !user) {
-  showStatus("Please sign in before publishing.", "error");
-  return;
-}
-      const button = document.querySelector("#" + formId + ' button[type="submit"]');
-      button.disabled = true;
-      button.textContent = "Publishing...";
+  if (authError || !user) {
+    showStatus("Please sign in before publishing.", "error");
+    return;
+  }
 
-      try {
-        row.user_id = user.id;
+  if (editingItem && editingItem.tableName !== tableName) {
+    showStatus("Please finish or cancel your current edit first.", "error");
+    return;
+  }
 
-const { error } = await supabaseClient.from(tableName).insert(row);
-        if (error) throw error;
+  const button = document.querySelector(
+    "#" + formId + ' button[type="submit"]'
+  );
 
-        document.getElementById(formId).reset();
-        showStatus("Published successfully! Refreshing shared data...", "success");
-        await loadAll();
-      } catch (error) {
-        console.error("Vynora publish failed:", error);
-        showStatus("Publishing failed: " + (error.message || "Please check your database settings and try again."), "error");
-      } finally {
-        button.disabled = false;
-        button.textContent =
-          formId === "postForm" ? "Publish post" :
-          formId === "businessForm" ? "Publish business" :
-          "Publish opportunity";
-      }
+  button.disabled = true;
+  button.textContent = editingItem ? "Saving changes..." : "Publishing...";
+
+  try {
+    row.user_id = user.id;
+
+    let result;
+
+    if (editingItem) {
+      result = await supabaseClient
+        .from(tableName)
+        .update(row)
+        .eq("id", editingItem.id)
+        .eq("user_id", user.id);
+    } else {
+      result = await supabaseClient
+        .from(tableName)
+        .insert(row);
     }
+
+    if (result.error) throw result.error;
+
+    const wasEditing = Boolean(editingItem);
+    editingItem = null;
+    document.getElementById(formId).reset();
+
+    showStatus(
+      wasEditing
+        ? "Changes saved successfully!"
+        : "Published successfully!",
+      "success"
+    );
+
+    await loadAll();
+  } catch (error) {
+    console.error("Vynora publish failed:", error);
+    showStatus(
+      "Saving failed: " +
+        (error.message || "Check your database settings and try again."),
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent =
+      formId === "postForm" ? "Publish post" :
+      formId === "businessForm" ? "Publish business" :
+      "Publish opportunity";
+  }
+}
+
 
     document.getElementById("postForm").addEventListener("submit", async event => {
       event.preventDefault();
@@ -498,6 +641,8 @@ async function startVynora() {
     SUPABASE_PUBLISHABLE_KEY
   );
 
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  currentUser = user;
   await loadAll();
 
   document.getElementById("signup-form").addEventListener("submit", async function (event) {
@@ -536,16 +681,19 @@ async function startVynora() {
 
     message.textContent = "Signing in...";
 
-    const { error } = await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+  email: email,
+  password: password
+});
 
+if (!error) {
+  currentUser = data.user;
+  await loadAll();
+}
 
-
-    message.textContent = error
-      ? error.message
-      : "You are signed in successfully!";
+message.textContent = error
+  ? error.message
+  : "You are signed in successfully!";
   });
     document.getElementById("account-message").insertAdjacentHTML(
     "afterend",
@@ -571,12 +719,17 @@ async function startVynora() {
       }
     });
 
-    message.textContent = error
+        message.textContent = error
       ? error.message
       : "Confirmation email requested. Check your inbox.";
   });
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    currentUser = session ? session.user : null;
+    renderAll();
+  });
 }
-    startVynora();
+startVynora();
 </script>
 </body>
 </html>
