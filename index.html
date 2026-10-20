@@ -402,6 +402,13 @@
     }
 
     async function publish(tableName, row, formId) {
+     const { data: { user }, error: authError } =
+  await supabaseClient.auth.getUser();
+
+if (authError || !user) {
+  showStatus("Please sign in before publishing.", "error");
+  return;
+}
       const button = document.querySelector("#" + formId + ' button[type="submit"]');
       button.disabled = true;
       button.textContent = "Publishing...";
