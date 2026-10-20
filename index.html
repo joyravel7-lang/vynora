@@ -305,9 +305,10 @@ let sharedData = { posts: [], businesses: [], opportunities: [] };
     let editingItem = null;
     
     function showStatus(message, type = "") {
-      statusBox.textContent = message;
-      statusBox.className = "status" + (type ? " " + type : "");
-    }
+  const statusBox = document.getElementById("connectionStatus");
+  statusBox.textContent = message;
+  statusBox.className = "status" + (type ? " " + type : "");
+}
 
     function element(tag, className, text) {
       const el = document.createElement(tag);
@@ -363,13 +364,7 @@ async function deleteItem(tableName, item) {
     return;
   }
   
-  if (
-    editingItem &&
-    editingItem.tableName === tableName &&
-    editingItem.id === item.id
-  ) {
-    editingItem = null;
-  }
+  
   if (!confirm("Are you sure you want to delete this item? This cannot be undone.")) {
     return;
   }
@@ -534,19 +529,28 @@ async function publish(tableName, row, formId) {
 
     let result;
 
-    if (editingItem) {
+            if (editingItem) {
       result = await supabaseClient
         .from(tableName)
         .update(row)
         .eq("id", editingItem.id)
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .select("id");
+
+      if (result.error) throw result.error;
+
+      if (!result.data || result.data.length === 0) {
+        throw new Error(
+          "No item was updated. Please refresh and check that the content belongs to your account."
+        );
+      }
     } else {
       result = await supabaseClient
         .from(tableName)
         .insert(row);
-    }
 
-    if (result.error) throw result.error;
+      if (result.error) throw result.error;
+    }
 
     const wasEditing = Boolean(editingItem);
     editingItem = null;
@@ -700,7 +704,7 @@ message.textContent = error
     '<button type="button" id="resend-confirmation">Resend confirmation email</button>'
   );
 
-  document.getElementById("resend-confirmation").addEventListener("click", async function () {
+   document.getElementById("resend-confirmation").addEventListener("click", async function () {
     const email = document.getElementById("signin-email").value.trim();
     const message = document.getElementById("account-message");
 
@@ -709,19 +713,26 @@ message.textContent = error
       return;
     }
 
-    message.textContent = "Sending confirmation email...";
+    message.textContent = "Requesting confirmation email...";
 
-    const { error } = await supabaseClient.auth.resend({
-      type: "signup",
-      email: email,
-      options: {
-        emailRedirectTo: "https://joyravel7-lang.github.io/vynora/"
-      }
-    });
+    try {
+      const { error } = await supabaseClient.auth.resend({
+        type: "signup",
+        email: email,
+        options: {
+          emailRedirectTo: "https://joyravel7-lang.github.io/vynora/"
+        }
+      });
 
-        message.textContent = error
-      ? error.message
-      : "Confirmation email requested. Check your inbox.";
+      if (error) throw error;
+
+      message.textContent =
+        "If this account needs confirmation, check your inbox and spam folder for a confirmation email.";
+    } catch (error) {
+      console.error("Vynora resend confirmation failed:", error);
+      message.textContent =
+        "Could not request a confirmation email. Please check the email address and try again.";
+    }
   });
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
