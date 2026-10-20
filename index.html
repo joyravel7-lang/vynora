@@ -414,7 +414,9 @@ if (authError || !user) {
       button.textContent = "Publishing...";
 
       try {
-        const { error } = await supabaseClient.from(tableName).insert(row);
+        row.user_id = user.id;
+
+const { error } = await supabaseClient.from(tableName).insert(row);
         if (error) throw error;
 
         document.getElementById(formId).reset();
