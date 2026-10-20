@@ -501,9 +501,12 @@ async function startVynora() {
     message.textContent = "Creating your account...";
 
     const { data, error } = await supabaseClient.auth.signUp({
-      email: email,
-      password: password
-    });
+  email: email,
+  password: password,
+  options: {
+    emailRedirectTo: "https://joyravel7-lang.github.io/vynora/"
+  }
+});
 
     if (error) {
       message.textContent = error.message;
