@@ -532,13 +532,42 @@ async function startVynora() {
       password: password
     });
 
+
+
     message.textContent = error
       ? error.message
       : "You are signed in successfully!";
   });
-}
+    document.getElementById("account-message").insertAdjacentHTML(
+    "afterend",
+    '<button type="button" id="resend-confirmation">Resend confirmation email</button>'
+  );
 
-startVynora();
+  document.getElementById("resend-confirmation").addEventListener("click", async function () {
+    const email = document.getElementById("signin-email").value.trim();
+    const message = document.getElementById("account-message");
+
+    if (!email) {
+      message.textContent = "Enter your email in the sign-in email field first.";
+      return;
+    }
+
+    message.textContent = "Sending confirmation email...";
+
+    const { error } = await supabaseClient.auth.resend({
+      type: "signup",
+      email: email,
+      options: {
+        emailRedirectTo: "https://joyravel7-lang.github.io/vynora/"
+      }
+    });
+
+    message.textContent = error
+      ? error.message
+      : "Confirmation email requested. Check your inbox.";
+  });
+}
+    startVynora();
 </script>
 </body>
 </html>
