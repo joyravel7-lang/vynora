@@ -1358,7 +1358,161 @@
       });
     }
 
+    
     startVynora();
+
+    // Vynora Skills and Services Marketplace
+    const serviceForm = document.getElementById("serviceForm");
+    const servicesList = document.getElementById("servicesList");
+    const serviceSearch = document.getElementById("serviceSearch");
+    const serviceFilter = document.getElementById("serviceFilter");
+    const serviceFormMessage = document.getElementById("serviceFormMessage");
+
+    async function loadServices() {
+      if (!servicesList) return;
+
+      servicesList.textContent = "Loading services...";
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("services")
+          .select("id, user_id, service_name, category, description, price, price_negotiable, contact, created_at")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const searchTerm = (serviceSearch?.value || "").trim().toLowerCase();
+        const category = serviceFilter?.value || "";
+
+        const filteredServices = (data || []).filter(service => {
+          const searchableText =
+            `${service.service_name} ${service.category} ${service.description}`.toLowerCase();
+
+          return searchableText.includes(searchTerm) &&
+            (!category || service.category === category);
+        });
+
+        servicesList.replaceChildren();
+
+        if (!filteredServices.length) {
+          const empty = document.createElement("p");
+          empty.className = "empty";
+          empty.textContent = "No services found yet. Try another search or publish a service.";
+          servicesList.appendChild(empty);
+          return;
+        }
+
+        filteredServices.forEach(service => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const title = document.createElement("h3");
+          title.textContent = service.service_name;
+
+          const categoryText = document.createElement("p");
+          categoryText.textContent = "Category: " + service.category;
+
+          const description = document.createElement("p");
+          description.textContent = service.description;
+
+          const price = document.createElement("p");
+          if (service.price !== null && service.price !== undefined) {
+            price.textContent = "Price: " + Number(service.price).toLocaleString();
+          } else {
+            price.textContent = "Price: Contact provider";
+          }
+
+          if (service.price_negotiable) {
+            price.textContent += " (Negotiable)";
+          }
+
+          card.append(title, categoryText, description, price);
+
+          if (service.contact) {
+            const contact = document.createElement("p");
+            contact.textContent = "Contact: " + service.contact;
+            card.appendChild(contact);
+          }
+
+          servicesList.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Vynora services could not load:", error);
+        servicesList.textContent =
+          "Services could not load. Please check your connection and Supabase table permissions.";
+      }
+    }
+
+    if (serviceForm) {
+      serviceForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (!supabaseClient) {
+          serviceFormMessage.textContent = "Vynora is still connecting. Please wait and try again.";
+          return;
+        }
+
+        const { data: { user }, error: userError } =
+          await supabaseClient.auth.getUser();
+
+        if (userError || !user) {
+          serviceFormMessage.textContent = "Please sign in before publishing a service.";
+          return;
+        }
+
+        const serviceName = document.getElementById("serviceName").value.trim();
+        const category = document.getElementById("serviceCategory").value;
+        const description = document.getElementById("serviceDescription").value.trim();
+        const priceInput = document.getElementById("servicePrice").value;
+        const priceNegotiable = document.getElementById("serviceNegotiable").checked;
+        const contact = document.getElementById("serviceContact").value.trim();
+
+        const price = priceInput === "" ? null : Number(priceInput);
+
+        if (!serviceName || !category || !description ||
+            (price !== null && (!Number.isFinite(price) || price < 0))) {
+          serviceFormMessage.textContent = "Please check the service details and price.";
+          return;
+        }
+
+        serviceFormMessage.textContent = "Publishing your service...";
+
+        try {
+          const { error } = await supabaseClient.from("services").insert({
+            user_id: user.id,
+            service_name: serviceName,
+            category,
+            description,
+            price,
+            price_negotiable: priceNegotiable,
+            contact: contact || null
+          });
+
+          if (error) throw error;
+
+          serviceForm.reset();
+          serviceFormMessage.textContent = "Service published successfully.";
+          await loadServices();
+        } catch (error) {
+          console.error("Vynora service publishing failed:", error);
+          serviceFormMessage.textContent =
+            "Could not publish. Please check your sign-in and Supabase permissions.";
+        }
+      });
+    }
+
+    serviceSearch?.addEventListener("input", loadServices);
+    serviceFilter?.addEventListener("change", loadServices);
+
+    // Load marketplace listings after Vynora initializes.
+    (async function initialiseMarketplace() {
+      while (!supabaseClient) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      await loadServices();
+    })();
   </script>
 </body>
 </html>
+
