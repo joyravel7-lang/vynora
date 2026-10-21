@@ -1402,6 +1402,11 @@
           return;
         }
 
+
+        // Check who is signed in.
+        const { data: { user: signedInUser } } =
+          await supabaseClient.auth.getUser();
+
         filteredServices.forEach(service => {
           const card = document.createElement("div");
           card.className = "card";
@@ -1416,11 +1421,10 @@
           description.textContent = service.description;
 
           const price = document.createElement("p");
-          if (service.price !== null && service.price !== undefined) {
-            price.textContent = "Price: " + Number(service.price).toLocaleString();
-          } else {
-            price.textContent = "Price: Contact provider";
-          }
+          price.textContent =
+            service.price !== null && service.price !== undefined
+              ? "Price: " + Number(service.price).toLocaleString()
+              : "Price: Contact provider";
 
           if (service.price_negotiable) {
             price.textContent += " (Negotiable)";
@@ -1434,8 +1438,105 @@
             card.appendChild(contact);
           }
 
+          // Only show Edit and Delete to the service owner.
+          if (signedInUser && service.user_id === signedInUser.id) {
+            const editButton = document.createElement("button");
+            editButton.type = "button";
+            editButton.textContent = "Edit";
+
+            editButton.addEventListener("click", async () => {
+              const name = prompt("Service name:", service.service_name);
+              if (name === null) return;
+
+              const category = prompt("Category:", service.category);
+              if (category === null) return;
+
+              const description = prompt("Description:", service.description);
+              if (description === null) return;
+
+              const priceText = prompt(
+                "Price (leave blank for no price):",
+                service.price ?? ""
+              );
+              if (priceText === null) return;
+
+              const contact = prompt(
+                "Contact method:",
+                service.contact || ""
+              );
+              if (contact === null) return;
+
+              const cleanName = name.trim();
+              const cleanCategory = category.trim();
+              const cleanDescription = description.trim();
+              const cleanPrice = priceText.trim();
+              const numericPrice = cleanPrice === "" ? null : Number(cleanPrice);
+
+              if (
+                !cleanName ||
+                !cleanCategory ||
+                !cleanDescription ||
+                (numericPrice !== null &&
+                  (!Number.isFinite(numericPrice) || numericPrice < 0))
+              ) {
+                alert("Please enter valid service details and price.");
+                return;
+              }
+
+              const { error } = await supabaseClient
+                .from("services")
+                .update({
+                  service_name: cleanName,
+                  category: cleanCategory,
+                  description: cleanDescription,
+                  price: numericPrice,
+                  contact: contact.trim() || null
+                })
+                .eq("id", service.id)
+                .eq("user_id", signedInUser.id);
+
+              if (error) {
+                console.error("Service update failed:", error);
+                alert("Could not update the service. Please try again.");
+                return;
+              }
+
+              alert("Service updated successfully.");
+              await loadServices();
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.textContent = "Delete";
+
+            deleteButton.addEventListener("click", async () => {
+              if (!confirm("Are you sure you want to delete this service?")) {
+                return;
+              }
+
+              const { error } = await supabaseClient
+                .from("services")
+                .delete()
+                .eq("id", service.id)
+                .eq("user_id", signedInUser.id);
+
+              if (error) {
+                console.error("Service deletion failed:", error);
+                alert("Could not delete the service. Please try again.");
+                return;
+              }
+
+              alert("Service deleted successfully.");
+              await loadServices();
+            });
+
+            card.append(editButton, deleteButton);
+          }
+
           servicesList.appendChild(card);
         });
+
+
       } catch (error) {
         console.error("Vynora services could not load:", error);
         servicesList.textContent =
