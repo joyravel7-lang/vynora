@@ -563,9 +563,113 @@
           <button type="submit">Publish business</button>
         </form>
       </div>
+    
+    </section>
+
+    <section class="section" id="marketplace">
+      <h2>Skills and Services Marketplace</h2>
+      <p class="subheading">
+        Share your skills, offer services, discover local talent and create opportunities.
+      </p>
+
+      <div class="layout">
+        <div class="card">
+          <h3>Offer a Service</h3>
+          <p class="subheading">
+            Sign in to publish a service. Be clear about what you offer.
+          </p>
+
+          <form id="serviceForm">
+            <label for="serviceName">Service name</label>
+            <input
+              id="serviceName"
+              name="serviceName"
+              type="text"
+              placeholder="e.g. Website design"
+              required
+            >
+
+            <label for="serviceCategory">Category</label>
+            <select id="serviceCategory" name="serviceCategory" required>
+              <option value="">Choose a category</option>
+              <option value="Technology">Technology</option>
+              <option value="Design">Design</option>
+              <option value="Writing and Typing">Writing and Typing</option>
+              <option value="Business">Business</option>
+              <option value="Tutoring">Tutoring</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <label for="serviceDescription">Description</label>
+            <textarea
+              id="serviceDescription"
+              name="serviceDescription"
+              placeholder="Describe your service and what customers receive."
+              required
+            ></textarea>
+
+            <label for="servicePrice">Price (optional)</label>
+            <input
+              id="servicePrice"
+              name="servicePrice"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 500"
+            >
+
+            <label>
+              <input
+                id="serviceNegotiable"
+                name="serviceNegotiable"
+                type="checkbox"
+              >
+              Price is negotiable
+            </label>
+
+            <label for="serviceContact">Contact method (optional)</label>
+            <input
+              id="serviceContact"
+              name="serviceContact"
+              type="text"
+              placeholder="e.g. business email or public contact"
+            >
+
+            <button type="submit">Publish Service</button>
+            <p id="serviceFormMessage" role="status"></p>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>Discover Services</h3>
+
+          <label for="serviceSearch">Search services</label>
+          <input
+            id="serviceSearch"
+            type="search"
+            placeholder="Search by service or keyword"
+          >
+
+          <label for="serviceFilter">Filter by category</label>
+          <select id="serviceFilter">
+            <option value="">All categories</option>
+            <option value="Technology">Technology</option>
+            <option value="Design">Design</option>
+            <option value="Writing and Typing">Writing and Typing</option>
+            <option value="Business">Business</option>
+            <option value="Tutoring">Tutoring</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <div id="servicesList">
+            <p class="empty">The service listings will appear here once connected.</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="section" id="opportunities">
+
       <h2>Opportunity Hub</h2>
       <p class="subheading">
         Share jobs, internships, scholarships and other opportunities.
