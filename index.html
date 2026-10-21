@@ -130,6 +130,129 @@
       header { align-items: flex-start; }
       nav { gap: 12px; }
     }
+    
+/* Vynora: modern, professional design upgrade */
+:root {
+  --vynora-primary: #6554e8;
+  --vynora-primary-dark: #4d3bc7;
+  --vynora-accent: #13b8a6;
+  --vynora-bg: #f6f7fc;
+  --vynora-card: #ffffff;
+  --vynora-text: #20243a;
+  --vynora-muted: #697087;
+  --vynora-border: #e6e8f1;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  background: var(--vynora-bg);
+  color: var(--vynora-text);
+  line-height: 1.65;
+}
+
+header, nav {
+  backdrop-filter: blur(12px);
+}
+
+nav a {
+  transition: color 0.2s ease, background 0.2s ease;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+nav a:hover {
+  color: var(--vynora-primary);
+  background: #eeecff;
+}
+
+button, .button, a.button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover, .button:hover, a.button:hover {
+  transform: translateY(-1px);
+}
+
+.card {
+  background: var(--vynora-card);
+  border: 1px solid var(--vynora-border);
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(35, 40, 80, 0.05);
+  padding: 20px;
+  overflow-wrap: anywhere;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 28px rgba(35, 40, 80, 0.09);
+}
+
+input, textarea, select {
+  max-width: 100%;
+  border: 1px solid var(--vynora-border);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid #c5bfff;
+  border-color: var(--vynora-primary);
+}
+
+button {
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+section {
+  scroll-margin-top: 90px;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 15px;
+  }
+
+  .card {
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  nav {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    padding: 7px 9px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
   </style>
 </head>
 <body>
