@@ -188,6 +188,159 @@ button:hover,
     border-radius: 14px;
   }
 }
+    
+/* Vynora: refined social platform layout */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: #f5f6fc;
+  color: #252642;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 16px max(5%, calc((100% - 1200px) / 2));
+  box-shadow: 0 4px 20px rgba(35, 30, 80, 0.06);
+}
+
+.logo {
+  font-size: 28px;
+  letter-spacing: -1px;
+}
+
+nav a {
+  padding: 9px 13px;
+  border-radius: 10px;
+  transition: background 0.2s, color 0.2s;
+}
+
+nav a:hover {
+  background: #eeecff;
+}
+
+.hero {
+  padding: 72px max(6%, calc((100% - 1100px) / 2));
+  background:
+    radial-gradient(ellipse at 85% 15%, rgba(19, 184, 166, 0.3), transparent 35%),
+    linear-gradient(120deg, #382080, #7056e8);
+}
+
+.hero p {
+  line-height: 1.8;
+}
+
+.hero .button {
+  margin-right: 8px;
+  margin-top: 18px;
+}
+
+.container {
+  max-width: 1160px;
+  padding-top: 38px;
+}
+
+.section {
+  margin-bottom: 48px;
+}
+
+.section h2 {
+  font-size: clamp(23px, 3vw, 30px);
+  letter-spacing: -0.5px;
+}
+
+.subheading {
+  line-height: 1.8;
+}
+
+.card {
+  padding: 24px;
+  border-radius: 18px;
+  box-shadow: 0 5px 24px rgba(35, 40, 80, 0.045);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(35, 40, 80, 0.09);
+}
+
+.tag {
+  background: #e9e7ff;
+  color: #5140c8;
+  padding: 6px 11px;
+}
+
+input,
+textarea,
+select {
+  padding: 12px 14px;
+  border-color: #e1e3ef;
+  border-radius: 11px;
+}
+
+button,
+.button {
+  border-radius: 11px;
+  font-weight: 600;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #bdb5ff;
+  outline-offset: 2px;
+}
+
+#account-section {
+  box-shadow: 0 10px 35px rgba(65, 45, 130, 0.09);
+  border: 1px solid #e6e0fa;
+}
+
+@media (max-width: 700px) {
+  header {
+    padding: 14px 18px;
+  }
+
+  nav {
+    gap: 6px;
+  }
+
+  nav a {
+    padding: 7px 9px;
+  }
+
+  .hero {
+    padding: 42px 22px;
+  }
+
+  .container {
+    padding: 24px 14px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
+
 
   </style>
 </head>
